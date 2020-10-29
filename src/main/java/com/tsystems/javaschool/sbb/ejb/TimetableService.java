@@ -1,5 +1,7 @@
 package com.tsystems.javaschool.sbb.ejb;
 
+import com.tsystems.javaschool.sbb.dto.StationDTO;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.client.Client;
@@ -15,8 +17,7 @@ public class TimetableService {
     public void updateTimetable() {
         Client client = ClientBuilder.newClient();
         WebTarget webTarget = client.target("http://localhost:8080/schedule/Bern");
-        //List response = Arrays.asList(webTarget.request().get(String[].class));
-        System.out.println(webTarget.request().get());
+        Object o = webTarget.request().get(StationDTO.class);
         client.close();
     }
 
