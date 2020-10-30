@@ -8,8 +8,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TrainDTO {
+
     private int id;
+
     private String trainName;
+
     private int capacity;
 
 }

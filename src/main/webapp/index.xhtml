@@ -20,7 +20,9 @@
 <h:body>
     <f:view>
         <div class="container mt-4 p-md-4 col-12 rounded-container">
+
             <h2 style="margin-bottom: 30px; text-align: center">Departure</h2>
+
             <table class="table" style="text-align: center">
 
                 <tr>
@@ -31,41 +33,41 @@
                     <th scope="col">Arrival</th>
                 </tr>
                 <tbody>
+                <ui:repeat value="#{timetableList}" var="timetable">
                 <tr>
-                    <ui:repeat value="#{schedulesList}" var="schedule">
                         <td>
-                            #{schedule.trainDTO.trainName}
-                            <h:panelGroup rendered="#{schedule.canceled}">
+                            #{timetable.trainName}
+                            <h:panelGroup rendered="#{timetable.canceled}">
                                 <br/>
                                 <span class="badge badge-danger">canceled</span>
                             </h:panelGroup>
 
-                            <h:panelGroup rendered="#{!schedule.canceled and schedule.delay != 0}">
+                            <h:panelGroup rendered="#{!timetable.canceled and timetable.delay != 0}">
                                 <br/>
                                 <span class="badge badge-warning">delayed</span>
                             </h:panelGroup>
                         </td>
 
-                        <th scope="row">#{schedule.stationFromDTO.title}</th>
-                        <td>#{schedule.stationToDTO.title}</td>
+                        <th scope="row">#{timetable.stationFrom}</th>
+                        <td>#{timetable.stationTo}</td>
 
                         <th scope="row">
-                            <h:outputText value="#{schedule.departureTime}" >
-                                <f:convertDateTime pattern="HH:mm" />
+                            <h:outputText value="#{timetable.departureTime}" >
+                                <f:convertDateTime pattern="HH:mm:ss" />
                             </h:outputText>
 
                         </th>
 
                         <td>
-                            <h:outputText value="#{schedule.arrivalTime}" >
-                                <f:convertDateTime pattern="HH:mm dd.MM" />
+                            <h:outputText value="#{timetable.arrivalTime}" >
+                                <f:convertDateTime pattern="HH:mm:ss dd.MM" />
                             </h:outputText>
                         </td>
-
-                    </ui:repeat>
                 </tr>
+                </ui:repeat>
                 </tbody>
             </table>
+
         </div>
     </f:view>
 </h:body>

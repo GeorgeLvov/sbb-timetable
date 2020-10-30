@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 public class StationDTO {
 
     private int id;
+
     private String title;
 }

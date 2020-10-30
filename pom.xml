@@ -13,7 +13,7 @@
         <!-- https://mvnrepository.com/artifact/javax/javaee-web-api -->
         <dependency>
             <groupId>javax</groupId>
-            <artifactId>javaee-web-api</artifactId>
+            <artifactId>javaee-api</artifactId>
             <version>7.0</version>
             <scope>provided</scope>
         </dependency>
@@ -29,8 +29,8 @@
         <!-- https://mvnrepository.com/artifact/javax.faces/jsf-api -->
         <dependency>
             <groupId>javax.faces</groupId>
-            <artifactId>jsf-api</artifactId>
-            <version>2.1</version>
+            <artifactId>javax.faces-api</artifactId>
+            <version>2.3</version>
             <scope>provided</scope>
         </dependency>
 
@@ -48,12 +48,19 @@
             <version>2.1.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.11.2</version>
+        </dependency>
 
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>2.11.2</version>
-            </dependency>
+        <!-- https://mvnrepository.com/artifact/javax.json.bind/javax.json.bind-api -->
+        <dependency>
+            <groupId>javax.json.bind</groupId>
+            <artifactId>javax.json.bind-api</artifactId>
+            <version>1.0</version>
+        </dependency>
+
 
     </dependencies>
 
