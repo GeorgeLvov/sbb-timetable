@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="X-UA-Conpatible" content="IE=edge" />
     <h:outputStylesheet library="css" name="bootstrap.min.css" />
-    <h:outputScript library="js" name="bootstrap.min.js" />
+<!--    <h:outputScript library="js" name="bootstrap.min.js" />-->
     <title>Schedule</title>
 
 </h:head>
@@ -52,23 +52,33 @@
                         <td>#{timetable.stationTo}</td>
 
                         <th scope="row">
-                            <h:outputText value="#{timetable.departureTime}" >
-                                <f:convertDateTime pattern="HH:mm:ss" />
+                            <h:outputText value="#{timetable.departureTime}">
+                                <f:convertDateTime pattern="HH:mm"/>
                             </h:outputText>
 
                         </th>
 
-                        <td>
-                            <h:outputText value="#{timetable.arrivalTime}" >
-                                <f:convertDateTime pattern="HH:mm:ss dd.MM" />
-                            </h:outputText>
-                        </td>
+                    <td>
+                        <h:outputText value="#{timetable.arrivalTime}">
+                            <f:convertDateTime pattern="HH:mm MMM,dd"/>
+                        </h:outputText>
+                    </td>
                 </tr>
                 </ui:repeat>
                 </tbody>
             </table>
 
         </div>
+
+        <script type="text/javascript">
+            function refreshPage(message, channel, event) {
+                console.log(message, channel, event)
+                window.location.reload();
+            }
+        </script>
+        <f:websocket channel="timetableChannel" onmessage="refreshPage"/>
+
     </f:view>
+
 </h:body>
 </html>
