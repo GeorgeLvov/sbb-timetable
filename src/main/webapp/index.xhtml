@@ -1,27 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:b="http://bootsfaces.net/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:c="http://java.sun.com/jsp/jstl/core">
 
 <h:head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="X-UA-Conpatible" content="IE=edge" />
-    <h:outputStylesheet library="css" name="bootstrap.min.css" />
-<!--    <h:outputScript library="js" name="bootstrap.min.js" />-->
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Schedule</title>
-
+    <h:outputStylesheet library="css" name="bootstrap.min.css"/>
+    <h:outputStylesheet library="css" name="clock.css"/>
+    <h:outputScript library="js" name="timetable.js"/>
 </h:head>
 
 
-<h:body>
+<h:body onload="currentTime()">
+
     <f:view>
+        <header>
+            <nav class="navbar navbar-expand-md navbar-light fixed-top bg-light">
+                <a class="navbar-brand" href="">
+                    <img src="resources/img/sbbBadge.png" class="logo" width="30" height="30" alt="sbbBadge"/>
+                    Swiss Federal Railways
+                </a>
+                <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item">
+                            <h:form styleClass="form-group">
+                                <h:selectOneMenu styleClass="form-control" value="#{timetableBean.currentStation}"
+                                                 rendered="#{not empty timetableBean.stations}" style="width: 250px; background-color: #f8f9fa;">
+                                    <f:selectItems value="#{timetableBean.stations}"/>
+                                    <f:ajax listener="#{timetableBean.updateTimetable}" onevent="refreshPage()"/>
+                                </h:selectOneMenu>
+                            </h:form>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                           <div id="clock"></div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+
         <div class="container mt-4 p-md-4 col-12 rounded-container">
 
-            <h2 style="margin-bottom: 30px; text-align: center">Departure</h2>
+            <h2 style="margin-bottom: 30px; margin-top: 40px; text-align: center">Departure</h2>
 
             <table class="table" style="text-align: center">
 
@@ -33,7 +63,7 @@
                     <th scope="col">Arrival</th>
                 </tr>
                 <tbody>
-                <ui:repeat value="#{timetableList}" var="timetable">
+                <ui:repeat value="#{timetableBean.timetableList}" var="timetable">
                 <tr>
                         <td>
                             #{timetable.trainName}
@@ -72,12 +102,22 @@
 
         <script type="text/javascript">
             function refreshPage(message, channel, event) {
-                console.log(message, channel, event)
-                window.location.reload();
+                setTimeout(function(){ window.location.reload(); }, 1000);
             }
         </script>
+
         <f:websocket channel="timetableChannel" onmessage="refreshPage"/>
 
+
+        <h:outputScript src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+                integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+                crossorigin="anonymous" />
+        <h:outputScript src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+                integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+                crossorigin="anonymous"/>
+        <h:outputScript src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+                integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+                crossorigin="anonymous"/>
     </f:view>
 
 </h:body>

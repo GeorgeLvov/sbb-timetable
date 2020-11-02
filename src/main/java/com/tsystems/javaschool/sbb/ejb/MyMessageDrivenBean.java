@@ -1,8 +1,11 @@
 package com.tsystems.javaschool.sbb.ejb;
 
+
+import com.tsystems.javaschool.sbb.service.TimetableService;
+
 import javax.ejb.ActivationConfigProperty;
-import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
+import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -14,15 +17,17 @@ import javax.jms.MessageListener;
         @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge") })
 public class MyMessageDrivenBean implements MessageListener {
 
-    @EJB
+    @Inject
+    private TimetableBean timetableBean;
+    @Inject
     private TimetableService timetableService;
-
 
     @Override
     public void onMessage(Message message) {
         try {
             System.out.println("Async message received: " + message.getBody(String.class));
-            timetableService.updateTimetable();
+            timetableService.updateContent();
+           // timetableBean.updateTimetable();
 
         } catch (JMSException e) {
             e.printStackTrace();
