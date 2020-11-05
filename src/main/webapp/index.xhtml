@@ -9,115 +9,177 @@
 
 <h:head>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Schedule</title>
+    <title>SBB: Timetable</title>
+    <link rel="shortcut icon" type="image/x-icon" href="#{resource['img/sbbClock.jpg']}"/>
     <h:outputStylesheet library="css" name="bootstrap.min.css"/>
-    <h:outputStylesheet library="css" name="clock.css"/>
+    <h:outputStylesheet library="css" name="timetable.css"/>
     <h:outputScript library="js" name="timetable.js"/>
 </h:head>
 
 
-<h:body onload="currentTime()">
-
+<h:body onload="currentTime(); changeDepartureArrival();">
     <f:view>
         <header>
             <nav class="navbar navbar-expand-md navbar-light fixed-top bg-light">
-                <a class="navbar-brand" href="">
+
+                <div class="navbar-brand">
                     <img src="resources/img/sbbBadge.png" class="logo" width="30" height="30" alt="sbbBadge"/>
                     Swiss Federal Railways
-                </a>
-                <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
-                    <ul class="navbar-nav mx-auto">
-                        <li class="nav-item">
-                            <h:form styleClass="form-group">
-                                <h:selectOneMenu styleClass="form-control" value="#{timetableBean.currentStation}"
-                                                 rendered="#{not empty timetableBean.stations}" style="width: 250px; background-color: #f8f9fa;">
-                                    <f:selectItems value="#{timetableBean.stations}"/>
-                                    <f:ajax listener="#{timetableBean.updateTimetable}" onevent="refreshPage()"/>
-                                </h:selectOneMenu>
-                            </h:form>
-                        </li>
-                    </ul>
                 </div>
+
+                <div class="nav-item select">
+                    <h:form styleClass="form-group">
+                        <h:selectOneMenu styleClass="form-control selectOne" value="#{timetableBean.currentStation}"
+                                         rendered="#{not empty timetableBean.stations}">
+                            <f:selectItems value="#{timetableBean.stations}"/>
+                            <f:ajax listener="#{timetableBean.changeCurrentStation}" render="deptTable arrTable"/>
+                        </h:selectOneMenu>
+                    </h:form>
+                </div>
+
 
                 <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item">
-                           <div id="clock"></div>
+                            <div id="clock"></div>
                         </li>
                     </ul>
                 </div>
             </nav>
         </header>
 
-        <div class="container mt-4 p-md-4 col-12 rounded-container">
 
-            <h2 style="margin-bottom: 30px; margin-top: 40px; text-align: center">Departure</h2>
-
-            <table class="table" style="text-align: center">
-
-                <tr>
-                    <th scope="col">Train</th>
-                    <th scope="col">From</th>
-                    <th scope="col">To</th>
-                    <th scope="col">Departure</th>
-                    <th scope="col">Arrival</th>
-                </tr>
-                <tbody>
-                <ui:repeat value="#{timetableBean.timetableList}" var="timetable">
-                <tr>
-                        <td>
-                            #{timetable.trainName}
-                            <h:panelGroup rendered="#{timetable.canceled}">
-                                <br/>
-                                <span class="badge badge-danger">canceled</span>
-                            </h:panelGroup>
-
-                            <h:panelGroup rendered="#{!timetable.canceled and timetable.delay != 0}">
-                                <br/>
-                                <span class="badge badge-warning">delayed</span>
-                            </h:panelGroup>
-                        </td>
-
-                        <th scope="row">#{timetable.stationFrom}</th>
-                        <td>#{timetable.stationTo}</td>
-
-                        <th scope="row">
-                            <h:outputText value="#{timetable.departureTime}">
-                                <f:convertDateTime pattern="HH:mm"/>
-                            </h:outputText>
-
-                        </th>
-
-                    <td>
-                        <h:outputText value="#{timetable.arrivalTime}">
-                            <f:convertDateTime pattern="HH:mm MMM,dd"/>
+            <div id="departureTable" class="container mt-4 p-md-4 col-10 rounded-container" style="display: none">
+                <h:panelGroup id="deptTable">
+                    <h2>
+                        Departure:
+                        <h:outputText value="#{now}">
+                            <f:convertDateTime pattern="dd.MM.yyyy" type="date"/>
                         </h:outputText>
-                    </td>
-                </tr>
-                </ui:repeat>
-                </tbody>
-            </table>
+                    </h2>
+                    <table class="table">
+                        <tr>
+                            <th scope="col">Train</th>
+                            <th scope="col">From</th>
+                            <th scope="col">To</th>
+                            <th scope="col">Departure</th>
+                            <th scope="col">Arrival</th>
+                            <th scope="col">Delay</th>
+                        </tr>
+                        <tbody>
+                        <ui:repeat value="#{timetableBean.departureTimetableList}" var="timetable">
+                            <tr>
+                                <td>#{timetable.trainName}</td>
+                                <td><strong>#{timetable.stationFrom}</strong></td>
+                                <td>#{timetable.stationTo}</td>
 
-        </div>
+                                <th scope="row">
+                                    <h:outputText value="#{timetable.departureTime}">
+                                        <f:convertDateTime pattern="HH:mm"/>
+                                    </h:outputText>
+                                </th>
+                                <td>
+                                    <h:outputText value="#{timetable.arrivalTime}">
+                                        <f:convertDateTime pattern="HH:mm dd.MM" locale="en_US"/>
+                                    </h:outputText>
+                                </td>
+                                <td>
+                                    <h:panelGroup rendered="#{!timetable.canceled and timetable.delay == 0}">
+                                        <span class="badge badge-success">on time</span>
+                                    </h:panelGroup>
 
-        <script type="text/javascript">
-            function refreshPage(message, channel, event) {
-                setTimeout(function(){ window.location.reload(); }, 1000);
-            }
-        </script>
+                                    <h:panelGroup rendered="#{timetable.canceled}">
+                                        <span class="badge badge-danger">canceled</span>
+                                    </h:panelGroup>
 
-        <f:websocket channel="timetableChannel" onmessage="refreshPage"/>
+                                    <h:panelGroup rendered="#{!timetable.canceled and timetable.delay != 0}">
+                                        <span class="badge badge-warning">delayed&#160;#{timetable.delay}min</span>
+                                    </h:panelGroup>
+                                </td>
+                            </tr>
+                        </ui:repeat>
 
+                        </tbody>
+                    </table>
+                </h:panelGroup>
+            </div>
+
+
+            <div id="arrivalTable" class="container mt-4 p-md-4 col-10 rounded-container" style="display:block;">
+                <h:panelGroup id="arrTable">
+                    <h2>
+                        Arrival:
+                        <h:outputText value="#{now}">
+                            <f:convertDateTime pattern="dd.MM.yyyy" type="date"/>
+                        </h:outputText>
+                    </h2>
+                    <table class="table">
+                        <tr>
+                            <th scope="col">Train</th>
+                            <th scope="col">From</th>
+                            <th scope="col">To</th>
+                            <th scope="col">Departure</th>
+                            <th scope="col">Arrival</th>
+                            <th scope="col">Delay</th>
+                        </tr>
+                        <tbody>
+
+                        <ui:repeat value="#{timetableBean.arrivalTimetableList}" var="timetable">
+                            <tr>
+                                <td>#{timetable.trainName}</td>
+                                <td>#{timetable.stationFrom}</td>
+                                <td><strong>#{timetable.stationTo}</strong></td>
+
+                                <td>
+                                    <h:outputText value="#{timetable.departureTime}">
+                                        <f:convertDateTime pattern="HH:mm dd.MM"/>
+                                    </h:outputText>
+                                </td>
+
+                                <th scope="row">
+                                    <h:outputText value="#{timetable.arrivalTime}">
+                                        <f:convertDateTime pattern="HH:mm" locale="en_US"/>
+                                    </h:outputText>
+                                </th>
+
+                                <td>
+                                    <h:panelGroup rendered="#{!timetable.canceled and timetable.delay == 0}">
+                                        <span class="badge badge-success">on time</span>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{timetable.canceled}">
+                                        <span class="badge badge-danger">canceled</span>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{!timetable.canceled and timetable.delay != 0}">
+                                        <span class="badge badge-warning">delayed&#160;#{timetable.delay}min</span>
+                                    </h:panelGroup>
+                                </td>
+                            </tr>
+                        </ui:repeat>
+
+                        </tbody>
+                    </table>
+                </h:panelGroup>
+            </div>
+
+        <footer class="fixed-bottom page-footer bg-light">
+            <p class="text-center footer-text">&#169; Swiss Federal Railways, 2020 </p>
+        </footer>
+
+        <f:websocket channel="timetableChannel">
+            <f:ajax event="message" listener="#{timetableBean.updateCurrentTimetable}" render="deptTable arrTable"/>
+        </f:websocket>
 
         <h:outputScript src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-                integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-                crossorigin="anonymous" />
+                        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+                        crossorigin="anonymous"/>
         <h:outputScript src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-                integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-                crossorigin="anonymous"/>
+                        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+                        crossorigin="anonymous"/>
         <h:outputScript src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-                integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-                crossorigin="anonymous"/>
+                        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+                        crossorigin="anonymous"/>
     </f:view>
 
 </h:body>

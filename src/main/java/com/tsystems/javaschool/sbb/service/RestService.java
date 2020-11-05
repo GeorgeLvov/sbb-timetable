@@ -8,25 +8,39 @@ import javax.ejb.Singleton;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Singleton
-public class RestService implements Serializable {
 
-    public List<TimetableDTO> getTimeTableByStationId(int stationId) {
+@Singleton
+public class RestService {
+
+
+    public List<TimetableDTO> getDepartureTimetableByStationId(int stationId) {
 
         Client client = ClientBuilder.newClient();
 
-        WebTarget webTarget = client.target("http://localhost:8080/schedule/" + stationId);
+        WebTarget webTarget = client.target("http://localhost:8080/timetable/departure/" + stationId);
 
-        List<TimetableDTO> list = Arrays.asList(webTarget.request().get(TimetableDTO[].class));
+        List<TimetableDTO> result = Arrays.asList(webTarget.request().get(TimetableDTO[].class));
 
         client.close();
 
-        return list;
+        return result;
+    }
+
+    public List<TimetableDTO> getArrivalTimetableByStationId(int stationId) {
+
+        Client client = ClientBuilder.newClient();
+
+        WebTarget webTarget = client.target("http://localhost:8080/timetable/arrival/" + stationId);
+
+        List<TimetableDTO> result = Arrays.asList(webTarget.request().get(TimetableDTO[].class));
+
+        client.close();
+
+        return result;
     }
 
 

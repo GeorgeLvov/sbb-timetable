@@ -1,0 +1,31 @@
+@font-face {
+    font-family: Clock;
+    src: url(#{resource[ "fonts/lcd14.otf" ]});
+}
+
+h2 {
+    margin-top: 40px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+table {
+    text-align: center;
+}
+
+#clock {
+    font-family: 'Clock', sans-serif;
+    color: #ca1515;
+    font-size: 28px;
+    text-align: center;
+    -webkit-user-select: none;
+}
+
+.select {
+    margin-left: 290px;
+}
+
+.selectOne {
+    width: 250px;
+    background-color: #f8f9fa;
+}
