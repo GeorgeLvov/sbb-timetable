@@ -7,14 +7,15 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
+
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 
 @Log4j2
 @Getter
@@ -34,33 +35,35 @@ public class TimetableService {
 
     @PostConstruct
     public void initialize() {
-        departureTimetablesMap = new HashMap<>();
-        arrivalTimetablesMap = new HashMap<>();
-        updateStationsMap();
-        getLatestTimetableInfo();
-
-    }
-
-    public void updateStationsMap() {
-
-        stationsMap = restService.getAllStations().stream()
-                .collect(Collectors.toMap(StationDTO::getTitle, StationDTO::getId));
-
-        if (!stationsMap.isEmpty()) {
-            log.info("Stations were updated!");
-        } else {
-            log.error("No station exists");
-            throw new NoStationExistsException();
+        try {
+            departureTimetablesMap = new HashMap<>();
+            arrivalTimetablesMap = new HashMap<>();
+            stationsMap = new HashMap<>();
+            updateStationsMap();
+            getLatestTimetableInfo();
+        } catch (NoStationExistsException e) {
+            log.error("Stations list is empty", e);
         }
     }
 
+    public void updateStationsMap() {
+        stationsMap = restService.getAllStations().stream()
+                .collect(Collectors.toMap(StationDTO::getTitle, StationDTO::getId));
+    }
+
     public void getLatestTimetableInfo() {
+        if (stationsMap.isEmpty()) {
+            throw new NoStationExistsException();
+        }
+
         for (String stationName : stationsMap.keySet()) {
             departureTimetablesMap.put(stationName,
                     restService.getDepartureTimetableByStationId(stationsMap.get(stationName)));
             arrivalTimetablesMap.put(stationName,
                     restService.getArrivalTimetableByStationId(stationsMap.get(stationName)));
         }
+        log.info("Stations list has been successfully updated!");
+
     }
 
     public List<TimetableDTO> getDepartureTimetableByStation(String stationName) {

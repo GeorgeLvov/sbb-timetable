@@ -8,11 +8,11 @@ import lombok.extern.log4j.Log4j2;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
 import javax.inject.Named;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -35,29 +35,32 @@ public class TimetableBean implements Serializable {
 
     @PostConstruct
     public void init() {
+        try {
+            currentStation = timetableService.getStationsMap()
+                    .keySet().stream().findFirst().get();
 
-        currentStation = timetableService.getStationsMap()
-                .keySet().stream().findFirst().get();
+            stations = timetableService.getStationsMap().keySet().stream()
+                    .sorted().collect(Collectors.toList());
 
-        stations = timetableService.getStationsMap().keySet().stream()
-                .sorted().collect(Collectors.toList());
+            updateTimetableLists();
 
-        updateTimetableLists();
-    }
+        } catch (NoSuchElementException e) {
+            currentStation = "";
+            log.error("Current station is empty!", e);
+        }
 
-    public void changeCurrentStation() {
-        updateTimetableLists();
-    }
-
-    public void updateCurrentTimetable() {
-        timetableService.getLatestTimetableInfo();
-        updateTimetableLists();
     }
 
     public void updateTimetableLists() {
         departureTimetableList = timetableService.getDepartureTimetableByStation(currentStation);
         arrivalTimetableList = timetableService.getArrivalTimetableByStation(currentStation);
-        log.info("Timetable was updated!");
+        log.info("Current station and timetable have been changed!");
+    }
+
+    public void requestLatestTimeTableInfo() {
+        timetableService.getLatestTimetableInfo();
+        updateTimetableLists();
+        log.info("Timetables have been successfully update!");
     }
 
 }

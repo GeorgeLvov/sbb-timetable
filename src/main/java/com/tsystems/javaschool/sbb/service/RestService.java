@@ -48,7 +48,7 @@ public class RestService {
 
         Client client = ClientBuilder.newClient();
 
-        WebTarget webTarget = client.target("http://localhost:8080/stations");
+        WebTarget webTarget = client.target("http://localhost:8080/allstations");
 
         List<StationDTO> result = new ArrayList<>(Arrays.asList(webTarget.request().get(StationDTO[].class)));
 

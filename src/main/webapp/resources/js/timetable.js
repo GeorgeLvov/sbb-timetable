@@ -10,7 +10,7 @@ function changeDepartureArrival() {
         x.style.display = "none";
         y.style.display = "block";
     }
-    setTimeout(changeDepartureArrival, 15000); // change departure/arrival table each 15 seconds
+    setTimeout(changeDepartureArrival, 5000); // change departure/arrival table each 15 seconds
 }
 
 function currentTime() {

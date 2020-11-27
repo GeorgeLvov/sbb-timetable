@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 
+
 @Log4j2
 @MessageDriven(name = "MessageDrivenBean", activationConfig = {
         @ActivationConfigProperty(propertyName = "destinationLookup",
